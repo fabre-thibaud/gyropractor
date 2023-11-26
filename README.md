@@ -24,6 +24,16 @@ You can then run the server:
 gyropractor
 ```
 
+### Database backend
+
+You need a working Postgres instance for the server to work. The Docker Compose file provides on for local testing and experiments.
+
+```
+cp .env.dist .env
+docker compose up -d
+gyropractor
+```
+
 ## Running tests
 
 You will need to have Docker and docker-compose installed in your environmnent
