@@ -7,7 +7,7 @@ mod repo;
 mod routes;
 mod ws;
 
-use std::{sync::Arc, collections::HashMap};
+use std::{sync::Arc, collections::HashMap, net::IpAddr};
 
 use dotenv::dotenv;
 use mobc::{Connection, Pool};
@@ -39,6 +39,17 @@ async fn main() {
         .expect("database can be initialized");
 
     warp::serve(routes::bind(db_pool, clients))
-        .run(([0, 0, 0, 0], 8000))
+        .run(get_bind_addr())
         .await;
+}
+
+fn get_bind_addr() -> (IpAddr, u16)
+{
+    let bind_addr = std::env::var("GYRO_LISTEN_ADDR").expect("GYRO_LISTEN_ADDR env var is not set");
+    let bind_port = std::env::var("GYRO_LISTEN_PORT").expect("GYRO_LISTEN_PORT env var is not set");
+
+    (
+        bind_addr.parse::<IpAddr>().expect("GYRO_LISTEN_ADDR is not a valid IP address"),
+        bind_port.parse::<u16>().expect("GYRO_LISTEN_PORT is not a valid port")
+    )
 }
