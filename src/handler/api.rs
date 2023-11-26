@@ -1,6 +1,6 @@
-use crate::{model::alert::*, DBPool, Result, repo::alert::*};
+use crate::{model::alert::*, DBPool, Result, repo::alert::*, Clients};
 use serde_derive::Deserialize;
-use warp::{reject, reply::json, Reply};
+use warp::{reject, reply::json, Reply, filters::ws::Message};
 
 #[derive(Deserialize, Debug)]
 pub struct SearchQuery {
@@ -21,10 +21,19 @@ pub async fn list_alerts(query: SearchQuery, db_pool: DBPool) -> Result<impl Rep
     ))
 }
 
-pub async fn create_alert(body: AlertRequest, db_pool: DBPool) -> Result<impl Reply> {
-    Ok(json(&AlertResponse::of(
-        create(&db_pool, body)
-            .await
-            .map_err(|e| reject::custom(e))?,
-    )))
+pub async fn create_alert(body: AlertRequest, db_pool: DBPool, clients: Clients) -> Result<impl Reply> {
+    let alert = create(&db_pool, body).await;
+
+    clients
+        .read()
+        .await
+        .iter()
+        .for_each(|(_, client)| {
+            if let Some(sender) = &client.sender {
+                let _ = sender.send(Ok(Message::text("Danger Will Robinson Danger !")));
+            }
+        });
+
+
+    Ok(json(&AlertResponse::of(alert.map_err(|e| reject::custom(e))?,)))
 }
