@@ -27,19 +27,20 @@ pub async fn get_db_con(db_pool: &DBPool) -> Result<DBCon> {
 }
 
 pub fn create_pool() -> std::result::Result<DBPool, mobc::Error<Error>> {
-    let postgres_host: String = std::env::var("POSTGRES_HOST").expect("POSTGRES_HOST env var is not set");
-    let postgres_port: String = std::env::var("POSTGRES_PORT").expect("POSTGRES_PORT env var is not set");
-    let postgres_user: String = std::env::var("POSTGRES_USER").expect("POSTGRES_USER env var is not set");
-    let postgres_pass: String = std::env::var("POSTGRES_PASSWORD").expect("POSTGRES_PASSWORD is not set");
-    let postgres_database: String = std::env::var("POSTGRES_DATABASE").expect("POSTGRES_DATABASE is not set");
+    let postgres_host: String =
+        std::env::var("POSTGRES_HOST").expect("POSTGRES_HOST env var is not set");
+    let postgres_port: String =
+        std::env::var("POSTGRES_PORT").expect("POSTGRES_PORT env var is not set");
+    let postgres_user: String =
+        std::env::var("POSTGRES_USER").expect("POSTGRES_USER env var is not set");
+    let postgres_pass: String =
+        std::env::var("POSTGRES_PASSWORD").expect("POSTGRES_PASSWORD is not set");
+    let postgres_database: String =
+        std::env::var("POSTGRES_DATABASE").expect("POSTGRES_DATABASE is not set");
 
     let config_uri: String = format!(
-        "postgres://{}:{}@{}:{}/{}", 
-        postgres_user, 
-        postgres_pass, 
-        postgres_host, 
-        postgres_port, 
-        postgres_database
+        "postgres://{}:{}@{}:{}/{}",
+        postgres_user, postgres_pass, postgres_host, postgres_port, postgres_database
     );
 
     debug!("connecting to postgres URI {}", config_uri);

@@ -1,9 +1,16 @@
-use crate::{Result, Clients, ws::{Client, RegisterRequest, RegisterResponse}};
-use futures::{StreamExt, FutureExt};
+use crate::{
+    ws::{Client, RegisterRequest, RegisterResponse},
+    Clients, Result,
+};
+use futures::{FutureExt, StreamExt};
 use tokio::sync::mpsc;
 use tokio_stream::wrappers::UnboundedReceiverStream;
 use uuid::Uuid;
-use warp::{http::StatusCode, reply::{Reply, json}, filters::ws::{WebSocket, Message}};
+use warp::{
+    filters::ws::{Message, WebSocket},
+    http::StatusCode,
+    reply::{json, Reply},
+};
 
 async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut client: Client) {
     let (client_ws_sender, mut client_ws_rcv) = ws.split();
@@ -82,7 +89,7 @@ pub async fn register(body: RegisterRequest, clients: Clients) -> Result<impl Re
 
     Ok(json(&RegisterResponse {
         url: format!("ws://gyro-test:8000/ws/{}", uuid),
-        id: format!("{}", uuid)
+        id: format!("{}", uuid),
     }))
 }
 
@@ -91,4 +98,3 @@ pub async fn unregister(id: String, clients: Clients) -> Result<impl Reply> {
 
     Ok(StatusCode::NO_CONTENT)
 }
-

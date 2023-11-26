@@ -8,13 +8,13 @@ pub struct Alert {
     pub component: String,
     pub created_at: DateTime<Utc>,
     pub checked: bool,
-    pub checked_at: Option<DateTime<Utc>>
+    pub checked_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct AlertRequest {
     pub name: String,
-    pub component: String
+    pub component: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -31,7 +31,7 @@ pub struct AlertResponse {
     pub component: String,
     pub checked: bool,
     pub created_at: DateTime<Utc>,
-    pub checked_at: Option<DateTime<Utc>>
+    pub checked_at: Option<DateTime<Utc>>,
 }
 
 impl AlertResponse {
@@ -42,7 +42,7 @@ impl AlertResponse {
             component: alert.component,
             checked: alert.checked,
             created_at: alert.created_at,
-            checked_at: alert.checked_at
+            checked_at: alert.checked_at,
         }
     }
 }

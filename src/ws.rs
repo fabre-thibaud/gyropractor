@@ -10,11 +10,11 @@ pub struct Client {
 
 #[derive(Deserialize, Debug)]
 pub struct RegisterRequest {
-    pub user_id: usize
+    pub user_id: usize,
 }
 
 #[derive(Serialize, Debug)]
 pub struct RegisterResponse {
     pub url: String,
-    pub id: String
+    pub id: String,
 }

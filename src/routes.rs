@@ -1,6 +1,6 @@
-use crate::{handler::*, DBPool, error, Clients};
+use crate::{error, handler::*, Clients, DBPool};
 use std::convert::Infallible;
-use warp::{Filter, reject::Rejection};
+use warp::{reject::Rejection, Filter};
 
 fn with_db(db_pool: DBPool) -> impl Filter<Extract = (DBPool,), Error = Infallible> + Clone {
     warp::any().map(move || db_pool.clone())
@@ -10,13 +10,16 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
     warp::any().map(move || clients.clone())
 }
 
-fn api(db_pool: DBPool, clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
+fn api(
+    db_pool: DBPool,
+    clients: Clients,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
     debug!("setting up api routes");
 
     let alerts = warp::path("alerts");
 
-    warp::path("api")
-        .and(alerts
+    warp::path("api").and(
+        alerts
             .and(warp::get())
             .and(warp::query())
             .and(with_db(db_pool.clone()))
@@ -26,10 +29,13 @@ fn api(db_pool: DBPool, clients: Clients) -> impl Filter<Extract = (impl warp::R
                 .and(warp::body::json())
                 .and(with_db(db_pool.clone()))
                 .and(with_clients(clients.clone()))
-                .and_then(api::create_alert)))
+                .and_then(api::create_alert)),
+    )
 }
 
-fn health(db_pool: DBPool) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
+fn health(
+    db_pool: DBPool,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
     debug!("setting up health routes");
 
     warp::path!("health")
@@ -37,13 +43,15 @@ fn health(db_pool: DBPool) -> impl Filter<Extract = (impl warp::Reply,), Error =
         .and_then(health::status)
 }
 
-fn register(clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
+fn register(
+    clients: Clients,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
     debug!("setting up register routes");
 
     let register = warp::path("register");
-    
-    warp::path("api")
-        .and(register
+
+    warp::path("api").and(
+        register
             .and(warp::post())
             .and(warp::body::json())
             .and(with_clients(clients.clone()))
@@ -52,10 +60,13 @@ fn register(clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), Erro
                 .and(warp::delete())
                 .and(warp::path::param())
                 .and(with_clients(clients.clone()))
-                .and_then(ws::unregister)))
+                .and_then(ws::unregister)),
+    )
 }
 
-fn ws_endpoint(clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
+fn ws_endpoint(
+    clients: Clients,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = Rejection> + Clone {
     debug!("setting up websocket endpoing");
 
     warp::path("ws")
@@ -65,9 +76,12 @@ fn ws_endpoint(clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), E
         .and_then(ws::handler)
 }
 
-pub fn bind(db_pool: DBPool, clients: Clients) -> impl Filter<Extract = (impl warp::Reply,), Error = Infallible> + Clone {
+pub fn bind(
+    db_pool: DBPool,
+    clients: Clients,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = Infallible> + Clone {
     debug!("setting up routes");
-    
+
     let root = warp::path::end()
         .and(warp::get())
         .map(|| warp::http::StatusCode::OK);

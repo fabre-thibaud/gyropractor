@@ -1,4 +1,3 @@
-
 mod db;
 mod error;
 mod handler;
@@ -7,7 +6,7 @@ mod repo;
 mod routes;
 mod ws;
 
-use std::{sync::Arc, collections::HashMap, net::IpAddr};
+use std::{collections::HashMap, net::IpAddr, sync::Arc};
 
 use dotenv::dotenv;
 use mobc::{Connection, Pool};
@@ -23,7 +22,8 @@ pub type DBPool = Pool<PgConnectionManager<NoTls>>;
 pub type Clients = Arc<RwLock<HashMap<String, Client>>>;
 
 extern crate pretty_env_logger;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 #[tokio::main]
 async fn main() {
@@ -43,13 +43,16 @@ async fn main() {
         .await;
 }
 
-fn get_bind_addr() -> (IpAddr, u16)
-{
+fn get_bind_addr() -> (IpAddr, u16) {
     let bind_addr = std::env::var("GYRO_LISTEN_ADDR").expect("GYRO_LISTEN_ADDR env var is not set");
     let bind_port = std::env::var("GYRO_LISTEN_PORT").expect("GYRO_LISTEN_PORT env var is not set");
 
     (
-        bind_addr.parse::<IpAddr>().expect("GYRO_LISTEN_ADDR is not a valid IP address"),
-        bind_port.parse::<u16>().expect("GYRO_LISTEN_PORT is not a valid port")
+        bind_addr
+            .parse::<IpAddr>()
+            .expect("GYRO_LISTEN_ADDR is not a valid IP address"),
+        bind_port
+            .parse::<u16>()
+            .expect("GYRO_LISTEN_PORT is not a valid port"),
     )
 }
