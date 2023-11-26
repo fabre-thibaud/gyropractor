@@ -9,7 +9,7 @@ First build and install the package. You need to have `rustc` and `cargo` instal
 :warning: This has *only* been tested on Ubuntu 22.04 with Rust 1.74
 
 ```
-cargo install --locked --path . --root $HOME/.local/gyropractor
+cargo install --profile release --locked --path . --root $HOME/.local/gyropractor
 ```
 
 `gyropractor` should now be compiled and available in your path
