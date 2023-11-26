@@ -40,7 +40,8 @@ services:
     image: grafana/k6
     volumes:
       - ./test:/usr/src/gyro-tests:ro
-    command: run /usr/src/gyro-tests/health-test.js
+    working_dir: /usr/src/gyro-tests
+    command: run functional-test.js
     depends_on:
       - gyro-test
     profiles:

@@ -16,4 +16,5 @@ pub struct RegisterRequest {
 #[derive(Serialize, Debug)]
 pub struct RegisterResponse {
     pub url: String,
+    pub id: String
 }

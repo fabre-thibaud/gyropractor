@@ -28,13 +28,14 @@ gyropractor
 
 You will need to have Docker and docker-compose installed in your environmnent
 
-### Load tests
 
 The K6 test suite bootstraps its own environment in Docker Compose with 3 containers:
 
 - a `postgres` container running the database backend
 - a `gyropractor` container running the server
 - a `grafana/k6` container that runs the load test-suite against the `gyropractor` container
+
+### Load tests
 
 :warning: **The test-suite runs for 10m30s and can be quite CPU-intensive.**
 

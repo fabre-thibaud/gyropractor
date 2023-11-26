@@ -54,6 +54,7 @@ async fn client_msg(id: &str, msg: Message, client: Client) {
         return;
     }
 }
+
 async fn register_client(id: String, user_id: usize, clients: Clients) {
     clients.write().await.insert(
         id,
@@ -80,13 +81,14 @@ pub async fn register(body: RegisterRequest, clients: Clients) -> Result<impl Re
     register_client(uuid.clone(), user_id, clients).await;
 
     Ok(json(&RegisterResponse {
-        url: format!("ws://127.0.0.1:8000/ws/{}", uuid),
+        url: format!("ws://gyro-test:8000/ws/{}", uuid),
+        id: format!("{}", uuid)
     }))
 }
 
 pub async fn unregister(id: String, clients: Clients) -> Result<impl Reply> {
     clients.write().await.remove(&id);
 
-    Ok(StatusCode::OK)
+    Ok(StatusCode::NO_CONTENT)
 }
 
