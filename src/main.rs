@@ -29,7 +29,7 @@ extern crate log;
 async fn main() {
     dotenv().ok();
 
-    pretty_env_logger::init();
+    pretty_env_logger::init_timed();
 
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
     let db_pool = db::create_pool().expect("database pool can be created");

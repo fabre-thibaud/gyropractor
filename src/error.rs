@@ -40,7 +40,7 @@ pub async fn handle_rejection(err: Rejection) -> std::result::Result<impl Reply,
                 message = "Could not Execute request";
             }
             _ => {
-                eprintln!("unhandled application error: {:?}", err);
+                error!("unhandled application error: {:?}", err);
                 code = StatusCode::INTERNAL_SERVER_ERROR;
                 message = "Internal Server Error";
             }
@@ -49,7 +49,7 @@ pub async fn handle_rejection(err: Rejection) -> std::result::Result<impl Reply,
         code = StatusCode::METHOD_NOT_ALLOWED;
         message = "Method Not Allowed";
     } else {
-        eprintln!("unhandled error: {:?}", err);
+        error!("unhandled error: {:?}", err);
         code = StatusCode::INTERNAL_SERVER_ERROR;
         message = "Internal Server Error";
     }
