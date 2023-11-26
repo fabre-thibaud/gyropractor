@@ -1,4 +1,4 @@
-# :construction: gyropractor
+# :rotating_light: gyropractor
 
 Relay tool between to push alerts into a websocket
 
@@ -6,7 +6,7 @@ Relay tool between to push alerts into a websocket
 
 First build and install the package. You need to have `rustc` and `cargo` installed in your environment.
 
-:warning: This has *only* been tested on Ubuntu 22.04 with Rust 1.74
+:warning: **This has *only* been tested on Ubuntu 22.04 with Rust 1.74**
 
 ```
 cargo install --profile release --locked --path . --root $HOME/.local/gyropractor
@@ -36,7 +36,7 @@ The K6 test suite bootstraps its own environment in Docker Compose with 3 contai
 - a `gyropractor` container running the server
 - a `grafana/k6` container that runs the load test-suite against the `gyropractor` container
 
-:warning: The test-suite runs for 10m30s and can be quite CPU-intensive.
+:warning: **The test-suite runs for 10m30s and can be quite CPU-intensive.**
 
 ```
 docker compose run --rm k6-test
