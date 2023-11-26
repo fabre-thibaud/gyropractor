@@ -7,3 +7,35 @@ services:
       - .env
     ports: 
       - 7878:5432
+
+  postgres-test:
+    image: postgres:15.2
+    env_file:
+      - .env.test
+    ports:
+      - 5432
+    profiles:
+      - load-tests
+    
+  gyro-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.test
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres-test
+    profiles:
+      - load-tests
+
+  k6-test:
+    image: grafana/k6
+    volumes:
+      - ./test:/usr/src/gyro-tests:ro
+    command: run /usr/src/gyro-tests/health-test.js
+    depends_on:
+      - gyro-test
+    profiles:
+      - load-tests

@@ -39,6 +39,6 @@ async fn main() {
         .expect("database can be initialized");
 
     warp::serve(routes::bind(db_pool, clients))
-        .run(([127, 0, 0, 1], 8000))
+        .run(([0, 0, 0, 0], 8000))
         .await;
 }

@@ -42,6 +42,8 @@ pub fn create_pool() -> std::result::Result<DBPool, mobc::Error<Error>> {
         postgres_database
     );
 
+    debug!("connecting to postgres URI {}", config_uri);
+
     let config = Config::from_str(&config_uri)?;
     let manager = PgConnectionManager::new(config, NoTls);
 
