@@ -1,0 +1,33 @@
+[tasks.default]
+alias = "init"
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--all"]
+
+[tasks.functional]
+command = "docker"
+args = ["compose", "run", "--rm", "k6-test", "functional"]
+
+[tasks.load]
+command = "docker"
+args = ["compose", "run", "--rm", "k6-test", "load"]
+
+[tasks.test]
+dependencies = ["functional", "load"]
+
+[tasks.init]
+script = "./tooling/env-init.sh"
+
+[tasks.docker-build]
+command = "docker"
+args = ["compose", "--profile", "test", "build", "--force-rm", "gyro-test"]
+
+[tasks.docker-stop]
+command = "docker"
+args = ["compose", "--profile", "test", "stop"]
+
+[tasks.docker-clean]
+command = "docker"
+args = ["compose", "--profile", "test", "rm", "-f"]
