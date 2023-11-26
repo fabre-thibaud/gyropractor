@@ -1,1 +1,7 @@
+.docker-compose.yml
 .env
+.env.dist
+.env.test
+.vscode
+Dockerfile
+target
