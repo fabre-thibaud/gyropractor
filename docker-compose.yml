@@ -39,9 +39,9 @@ services:
   k6-test:
     image: grafana/k6
     volumes:
-      - ./test:/usr/src/gyro-tests:ro
-    working_dir: /usr/src/gyro-tests
-    command: run functional-test.js
+      - .:/usr/src/gyro:ro
+    working_dir: /usr/src/gyro/
+    entrypoint: ./tooling/k6-entrypoint.sh
     depends_on:
       - gyro-test
     profiles:
