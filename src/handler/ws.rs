@@ -18,7 +18,7 @@ async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut clie
     }));
 
     client.sender = Some(client_sender);
-    clients.write().await.insert(id.clone(), client);
+    clients.write().await.insert(id.clone(), client.clone());
 
     println!("{} connected", id);
 
@@ -31,7 +31,7 @@ async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut clie
             }
         };
 
-        client_msg(&id, msg).await;
+        client_msg(&id, msg, client.clone()).await;
     }
 
     clients.write().await.remove(&id);
@@ -39,8 +39,20 @@ async fn client_connection(ws: WebSocket, id: String, clients: Clients, mut clie
     println!("{} disconnected", id);
 }
 
-async fn client_msg(id: &str, msg: Message) {
-    return;
+async fn client_msg(id: &str, msg: Message, client: Client) {
+    println!("received message from {}: {:?}", id, msg);
+    let message = match msg.to_str() {
+        Ok(v) => v,
+        Err(_) => return,
+    };
+
+    if message == "ping" || message == "ping\n" {
+        if let Some(sender) = &client.sender {
+            let _ = sender.send(Ok(Message::text("pong\n")));
+        }
+
+        return;
+    }
 }
 async fn register_client(id: String, user_id: usize, clients: Clients) {
     clients.write().await.insert(
