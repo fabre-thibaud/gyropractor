@@ -9,23 +9,22 @@ export const options = {
     },
 };
 
-function registerClient() {
-    const response = http.post(
-        'http://gyro-test:8000/api/register/',
-        JSON.stringify({ user_id: 1, component: "test" }),
-        { headers: { "Content-Type": "application/json" } }
-    );
+export default function testWebsocketEndpoints(session) {
+    function registerClient() {
+        const response = session.post(
+            '/api/register/',
+            JSON.stringify({ user_id: 1, component: "test" })
+        );
+    
+        return {
+            response: response,
+            websocket: {
+                url: response.json().url,
+                id: response.json().id
+            }
+        };
+    }
 
-    return {
-        response: response,
-        websocket: {
-            url: response.json().url,
-            id: response.json().id
-        }
-    };
-}
-
-export default function testWebsocketEndpoints() {
     describe('Register a client and connect to WebSocket', () => {
         const clientInfo = registerClient();
 
@@ -42,10 +41,7 @@ export default function testWebsocketEndpoints() {
 
     describe('Websocket endpoint is not available after unregister', () => {
         const clientInfo = registerClient();
-        const response = http.del(
-            `http://gyro-test:8000/api/register/${clientInfo.websocket.id}`,
-            { headers: { "Content-Type": "application/json" }}
-        );
+        const response = session.delete(`/api/register/${clientInfo.websocket.id}`);
 
         check(response, { 'status is 204': (r) => r && r.status === 204 });
 
@@ -81,21 +77,18 @@ export default function testWebsocketEndpoints() {
 
         const res = ws.connect(clientInfo.websocket.url, {}, function (socket) {
             socket.on('message', (message) => {
-                console.log(message);
-
                 notificationMessage = message;
                 wasNotified = true;
 
                 socket.close();
             });
 
-            http.post(
-                'http://gyro-test:8000/api/alerts/',
+            session.post(
+                '/api/alerts/',
                 JSON.stringify({
                     "name": "Test alert",
                     "component": "CIS"
-                }),
-                { headers: { "Content-Type": "application/json" } }
+                })
             );
         });
 
