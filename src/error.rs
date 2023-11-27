@@ -33,6 +33,9 @@ pub async fn handle_rejection(err: Rejection) -> std::result::Result<impl Reply,
     } else if let Some(_) = err.find::<warp::filters::body::BodyDeserializeError>() {
         code = StatusCode::BAD_REQUEST;
         message = "Invalid Body";
+    } else if let Some(_) = err.find::<warp::reject::InvalidQuery>() {
+        code = StatusCode::BAD_REQUEST;
+        message = "Invalid Query";
     } else if let Some(e) = err.find::<Error>() {
         match e {
             Error::DBQueryError(_) => {

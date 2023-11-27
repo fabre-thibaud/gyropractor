@@ -97,10 +97,10 @@ export default function testAlertEndpoints(session) {
         
         response = session.get(`/api/alerts/?page=-1&page_size=10`);
 
-        expect(response.status, 'list response status').to.equal(405);
+        expect(response.status, 'list response status').to.equal(400);
 
         response = session.get(`/api/alerts/?page=1&page_size=-10`);
 
-        expect(response.status, 'list response status').to.equal(405);
+        expect(response.status, 'list response status').to.equal(400);
     })
 }
