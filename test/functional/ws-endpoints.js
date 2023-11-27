@@ -1,5 +1,4 @@
 import { check, fail } from 'k6';
-import http from 'k6/http';
 import ws from 'k6/ws';
 import { describe, expect } from 'https://jslib.k6.io/k6chaijs/4.3.4.3/index.js';
 
@@ -32,24 +31,25 @@ export default function testWebsocketEndpoints(session) {
         expect(clientInfo.response).to.have.validJsonBody();
         expect(clientInfo.websocket.url, 'url').to.be.a('string');
 
-        const res = ws.connect(clientInfo.websocket.url, {}, function (socket) {
+        const response = ws.connect(clientInfo.websocket.url, {}, function (socket) {
             socket.close();
         });
 
-        check(res, { 'status is 101': (r) => r && r.status === 101 });
+        expect(response.status, 'websocket connection status').to.equal(101);
     });
 
     describe('Websocket endpoint is not available after unregister', () => {
         const clientInfo = registerClient();
-        const response = session.delete(`/api/register/${clientInfo.websocket.id}`);
 
-        check(response, { 'status is 204': (r) => r && r.status === 204 });
+        let response = session.delete(`/api/register/${clientInfo.websocket.id}`);
 
-        const res = ws.connect(clientInfo.websocket.url, {}, function (socket) {
+        expect(response.status, 'delete registration response status').to.equal(204);
+
+        response = ws.connect(clientInfo.websocket.url, {}, function (socket) {
             fail('websocket connection has not failed');
         });
 
-        check(res, { 'status is 404': (r) => r && r.status === 404 });
+        expect(response.status, 'websocket response status').to.equal(404);
     })
 
     describe('Websocket replies to ping messages', () => {
@@ -66,7 +66,7 @@ export default function testWebsocketEndpoints(session) {
             socket.ping();
         });
 
-        check(wasPonged, { 'server replied to ping': () => wasPonged === true });
+        expect(wasPonged, 'pong received').to.equal(true);
     });
 
     describe('Alerts are published to websocket clients', () => {
@@ -75,7 +75,7 @@ export default function testWebsocketEndpoints(session) {
         let wasNotified = false;
         let notificationMessage = "";
 
-        const res = ws.connect(clientInfo.websocket.url, {}, function (socket) {
+        const response = ws.connect(clientInfo.websocket.url, {}, function (socket) {
             socket.on('message', (message) => {
                 notificationMessage = message;
                 wasNotified = true;
@@ -92,9 +92,7 @@ export default function testWebsocketEndpoints(session) {
             );
         });
 
-        check(wasNotified, { 
-            'server published alert notification': () => wasNotified === true,
-            'notification message is valid': () => notificationMessage === "Danger Will Robinson Danger !"
-        });        
+        expect(wasNotified, 'notification received').to.equal(true);
+        expect(notificationMessage, 'notification message').to.equal("Danger Will Robinson Danger !");
     })
 }
